@@ -1,0 +1,34 @@
+{
+  "name": "lendsqr-task",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "verify-format": "prettier --check src/**",
+    "format": "prettier --write src/**",
+    "db:migrate": "knex migrate:latest",
+    "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' src/main.ts"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.0.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "gen-env-types": "^1.3.4",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^2.3.0",
+    "mysql": "^2.18.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/express": "^4.17.14",
+    "@types/jsonwebtoken": "^8.5.9",
+    "@types/node": "^18.8.2",
+    "@types/uuid": "^8.3.4",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}
