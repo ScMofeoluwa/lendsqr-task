@@ -19,13 +19,13 @@ class PaystackService {
     return generate();
   }
 
-  async initializeTransaction(payload: Data) {
+  async initializeTransaction(amount: number) {
     const reference = this.generateTxnReference();
     const { data } = await this.axios.post<IResponseData>(
       "/transaction/initialize",
       {
-        email: payload.email,
-        amount: payload.amount * 100,
+        email: "test@gmail.com",
+        amount: amount * 100,
         reference: reference,
       },
     );
