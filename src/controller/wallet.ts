@@ -4,7 +4,7 @@ import TransactionService from "../service/transaction";
 import UserService from "../service/user";
 import PaystackService from "../service/paystack";
 import { Status, Transaction } from "../interface";
-import shortid from "shortid";
+import { generate } from "shortid";
 
 class WalletController {
   async getDetails(req: Request, res: Response): Promise<void> {
@@ -42,9 +42,9 @@ class WalletController {
       const walletId = req.user.walletId;
       const user = await UserService.getOneByUsername(req.body.username);
       const destinationWallet = await WalletService.getOneByUser(user.id);
-      const amount = req.body.amount;
+      const amount = parseInt(req.body.amount);
       await TransactionService.create({
-        id: shortid.generate(),
+        id: generate(),
         wallet_id: walletId,
         amount: amount * -1,
         source: walletId,
@@ -53,7 +53,7 @@ class WalletController {
         status: "successful",
       });
       await TransactionService.create({
-        id: shortid.generate(),
+        id: generate(),
         wallet_id: destinationWallet.id,
         amount: amount,
         source: walletId,
@@ -74,27 +74,29 @@ class WalletController {
       const bankCode = await PaystackService.getBankCode("Kuda Bank");
       //@ts-ignore
       const walletId = req.user.walletId;
+      const amount = parseInt(req.body.amount);
       const recipientCode = await PaystackService.createTransferRecipient({
         name: req.body.name,
         accountNumber: req.body.account,
         bankCode: bankCode,
+        reason: req.body.reason,
       });
       // const transferCode = await PaystackService.initiateTransfer({
-      //   amount: req.body.amount,
+      //   amount: amount,
       //   recipient: recipientCode,
       // });
       // await PaystackService.finalizeTransfer(transferCode);
 
       //could not initiate paystack transfer due to business type of my account
-      //randomly generating transaction status, by default status is pending and final status ia handled by a webhook
+      //randomly generating transaction status, by default status is pending and final status is handled by a webhook
       const statusType = ["successful", "failed", "reversed"];
       const status = statusType[
         Math.floor(Math.random() * 11) % statusType.length
       ] as Status;
       await TransactionService.create({
-        id: shortid.generate(),
+        id: generate(),
         wallet_id: walletId,
-        amount: req.body.amount * -1,
+        amount: amount * -1,
         source: walletId,
         type: "withdrawal",
         status: status,
