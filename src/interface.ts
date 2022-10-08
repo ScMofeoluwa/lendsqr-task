@@ -16,21 +16,21 @@ export interface IResponseData {
   data: Data;
 }
 
-export interface User {
+export interface IUser {
   id: number;
   username: string;
   email: string;
   password: string;
 }
 
-export interface Wallet {
+export interface IWallet {
   id: number;
   balance: number;
   created_at: Date;
   user_id: number;
 }
 
-export interface Transaction {
+export interface ITransaction {
   id: string;
   wallet_id: number;
   amount: number;

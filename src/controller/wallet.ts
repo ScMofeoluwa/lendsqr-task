@@ -3,13 +3,12 @@ import WalletService from "../service/wallet";
 import TransactionService from "../service/transaction";
 import UserService from "../service/user";
 import PaystackService from "../service/paystack";
-import { Status, Transaction } from "../interface";
+import { Status, ITransaction } from "../interface";
 import { generate } from "shortid";
 
 class WalletController {
   async getDetails(req: Request, res: Response): Promise<void> {
     try {
-      //@ts-ignore
       const wallet = await WalletService.getOne(parseInt(req.user.id));
       res.status(200).send({ message: null, data: wallet });
     } catch (err: any) {
@@ -19,12 +18,12 @@ class WalletController {
 
   async fund(req: Request, res: Response): Promise<void> {
     try {
-      //@ts-ignore
       const walletId = req.user.walletId;
-      const data = await PaystackService.initializeTransaction(req.body);
-      const payload: Transaction = {
+      const amount = req.body.amount;
+      const data = await PaystackService.initializeTransaction(amount);
+      const payload: ITransaction = {
         id: data.txnRef,
-        amount: req.body.amount,
+        amount: amount,
         wallet_id: walletId,
         destination: walletId,
         type: "deposit",
@@ -38,11 +37,10 @@ class WalletController {
 
   async transfer(req: Request, res: Response): Promise<void> {
     try {
-      //@ts-ignore
       const walletId = req.user.walletId;
       const user = await UserService.getOneByUsername(req.body.username);
       const destinationWallet = await WalletService.getOneByUser(user.id);
-      const amount = parseInt(req.body.amount);
+      const amount = req.body.amount;
       await TransactionService.create({
         id: generate(),
         wallet_id: walletId,
@@ -72,9 +70,8 @@ class WalletController {
   async withdraw(req: Request, res: Response): Promise<void> {
     try {
       const bankCode = await PaystackService.getBankCode("Kuda Bank");
-      //@ts-ignore
       const walletId = req.user.walletId;
-      const amount = parseInt(req.body.amount);
+      const amount = req.body.amount;
       const recipientCode = await PaystackService.createTransferRecipient({
         name: req.body.name,
         accountNumber: req.body.account,

@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import { Wallet } from "../interface";
+import { IWallet } from "../interface";
 import { db } from "./index";
 
 class WalletRepository {
@@ -9,16 +9,16 @@ class WalletRepository {
     return db(this.tableName);
   }
 
-  async create(item: Pick<Wallet, "user_id">): Promise<boolean> {
+  async create(item: Pick<IWallet, "user_id">): Promise<boolean> {
     const result = await this._model.insert(item);
     return !!result;
   }
 
-  async findByUserId(id: number): Promise<Omit<Wallet, "balance">> {
+  async findByUserId(id: number): Promise<Omit<IWallet, "balance">> {
     return this._model.where("user_id", id).first();
   }
 
-  async findOne(id: number): Promise<Wallet> {
+  async findOne(id: number): Promise<IWallet> {
     return this._model.where("id", id).first();
   }
 

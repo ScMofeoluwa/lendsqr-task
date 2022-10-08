@@ -1,9 +1,9 @@
 import UserRepository from "../repository/user";
-import { User, IService } from "../interface";
+import { IUser, IService } from "../interface";
 import { genSalt, hash, compare } from "bcryptjs";
 
-class UserService implements IService<User> {
-  async create(data: Omit<User, "id">): Promise<boolean> {
+class UserService implements IService<IUser> {
+  async create(data: Omit<IUser, "id">): Promise<boolean> {
     let user = await UserRepository.findByEmail(data.email);
     if (user) {
       throw new Error("user already exists.");
@@ -12,7 +12,7 @@ class UserService implements IService<User> {
     return await UserRepository.create(data);
   }
 
-  async getOneByEmail(email: string): Promise<User> {
+  async getOneByEmail(email: string): Promise<IUser> {
     const user = await UserRepository.findByEmail(email);
     if (!user) {
       throw new Error("user not found");
@@ -20,7 +20,7 @@ class UserService implements IService<User> {
     return user;
   }
 
-  async getOneByUsername(username: string): Promise<User> {
+  async getOneByUsername(username: string): Promise<IUser> {
     const user = await UserRepository.findByUsername(username);
     if (!user) {
       throw new Error("user not found");

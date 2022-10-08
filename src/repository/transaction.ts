@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import { Transaction } from "../interface";
+import { ITransaction } from "../interface";
 import { db } from "./index";
 
 class TransactionRepository {
@@ -9,7 +9,7 @@ class TransactionRepository {
     return db(this.tableName);
   }
 
-  async create(item: Partial<Transaction>): Promise<void> {
+  async create(item: Partial<ITransaction>): Promise<void> {
     const trx = await db.transaction();
     try {
       await trx(this.tableName).insert(item);
@@ -19,21 +19,21 @@ class TransactionRepository {
     }
   }
 
-  async findAll(walletId: number): Promise<Transaction[]> {
+  async findAll(walletId: number): Promise<ITransaction[]> {
     return this._model.where("wallet_id", walletId);
   }
 
-  async findByWallet(walletId: number, id: string): Promise<Transaction> {
+  async findByWallet(walletId: number, id: string): Promise<ITransaction> {
     return this._model.where("wallet_id", walletId).where("id", id);
   }
 
-  async findOne(id: string): Promise<Transaction> {
+  async findOne(id: string): Promise<ITransaction> {
     return this._model.where("id", id).first();
   }
 
   async update(
     id: string,
-    item: Pick<Transaction, "status">,
+    item: Pick<ITransaction, "status">,
   ): Promise<boolean> {
     const result = await this._model.where("id", id).update(item);
     return !!result;
