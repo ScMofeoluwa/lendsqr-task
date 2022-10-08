@@ -1,9 +1,9 @@
 import axios, { AxiosInstance } from "axios";
 import { IResponseData, Data } from "../interface";
-import { v4 as uuidv4 } from "uuid";
+import shortid from "shortid";
 import { configuration } from "../config/config";
 
-export class PaystackService {
+class PaystackService {
   private readonly axios: AxiosInstance;
   constructor() {
     this.axios = axios.create({
@@ -16,7 +16,7 @@ export class PaystackService {
   }
 
   generateTxnReference() {
-    return uuidv4();
+    return shortid.generate();
   }
 
   async initializeTransaction(payload: Data) {
@@ -35,23 +35,27 @@ export class PaystackService {
     };
   }
 
-  async verifyTransaction(reference: string) {
-    const { data } = await this.axios.get<IResponseData>(
-      `transaction/verify/${reference}`,
-    );
-    return data;
-  }
-
   async createTransferRecipient(payload: Data) {
     const { data } = await this.axios.post<IResponseData>(
       "/transferrecipient",
-      payload,
+      {
+        type: "nuban",
+        currency: "NGN",
+        account_number: payload.accountNumber,
+        bank_code: payload.bankCode,
+        name: payload.name,
+      },
     );
     return data.data["recipient_code"];
   }
 
   async initiateTransfer(payload: Data) {
-    const { data } = await this.axios.post<IResponseData>("/transfer", payload);
+    const reference = this.generateTxnReference();
+    const { data } = await this.axios.post<IResponseData>("/transfer", {
+      source: "balance",
+      amount: payload.amount * 100,
+      reference: reference,
+    });
     return data.data["transfer_code"];
   }
 
@@ -61,6 +65,11 @@ export class PaystackService {
       code,
     );
     return data;
+  }
+
+  async getBankCode(bankName: string) {
+    const { data } = await this.axios.get<IResponseData>("/bank");
+    return data.data.find((bank: any) => bank.name === bankName).code;
   }
 }
 
