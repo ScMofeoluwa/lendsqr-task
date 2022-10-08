@@ -1,10 +1,14 @@
+type Type = "deposit" | "withdrawal" | "transfer";
+
+export type Status = "pending" | "successful" | "failed" | "reversed";
+
 export type Data = {
   [key: string]: any;
 };
 
-type Type = "deposit" | "withdrawal" | "transfer";
-
-type Status = "pending" | "successful" | "failed";
+export interface IService<T> {
+  create(data: Omit<T, "id">): Promise<boolean>;
+}
 
 export interface IResponseData {
   status: number;
@@ -27,15 +31,11 @@ export interface Wallet {
 }
 
 export interface Transaction {
-  id?: number;
+  id: string;
   wallet_id: number;
   amount: number;
   source?: number;
   destination?: number;
   type: Type;
   status?: Status;
-}
-
-export interface IService<T> {
-  create(data: Omit<T, "id">): Promise<boolean>;
 }
