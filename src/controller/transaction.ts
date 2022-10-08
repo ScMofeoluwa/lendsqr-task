@@ -6,7 +6,6 @@ import { configuration } from "../config/config";
 class TransactionController {
   async getOne(req: Request, res: Response): Promise<any> {
     try {
-      //@ts-ignore
       const walletId = req.user.walletId;
       const txn = await TransactionService.getByWallet(walletId, req.params.id);
       res.status(200).send({ message: null, data: txn });
@@ -16,7 +15,6 @@ class TransactionController {
   }
 
   async getAll(req: Request, res: Response): Promise<any> {
-    //@ts-ignore
     const walletId = req.user.walletId;
     const txns = await TransactionService.getAll(walletId);
     res.status(200).send({ message: null, data: txns });

@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
 import path from "path";
+import { Data } from "../interface";
 
 dotenv.config({
   path: path.normalize(path.join(path.dirname(__dirname) + "/../.env")),
 });
 
-const options = {
+const options: Data = {
   development: {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
@@ -43,8 +44,6 @@ const options = {
     secret: process.env.REFRESH_SECRET,
   },
 };
-
-const env = process.env.NODE_ENV;
-//@ts-ignore
+const env = process.env.NODE_ENV as string;
 const configuration = options[env];
 export { configuration };

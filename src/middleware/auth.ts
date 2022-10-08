@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { Data } from "../interface";
 import JwtService from "../service/jwt";
 import { configuration } from "../config/config";
 
@@ -14,8 +15,7 @@ class AuthMiddleware {
         .status(401)
         .send({ message: "Access Denied: No token provided" });
     try {
-      //@ts-ignore
-      req.user = JwtService.validateToken(token, configuration.secret);
+      req.user = JwtService.validateToken(token, configuration.secret) as Data;
       next();
     } catch (ex) {
       res.status(400).send({ message: "Invalid token" });
