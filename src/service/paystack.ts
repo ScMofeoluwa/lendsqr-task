@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { IResponseData, Data } from "../interface";
-import shortid from "shortid";
+import { generate } from "shortid";
 import { configuration } from "../config/config";
 
 class PaystackService {
@@ -16,7 +16,7 @@ class PaystackService {
   }
 
   generateTxnReference() {
-    return shortid.generate();
+    return generate();
   }
 
   async initializeTransaction(payload: Data) {
@@ -55,6 +55,7 @@ class PaystackService {
       source: "balance",
       amount: payload.amount * 100,
       reference: reference,
+      reason: payload.reason,
     });
     return data.data["transfer_code"];
   }
