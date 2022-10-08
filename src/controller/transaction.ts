@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import TransactionService from "../service/transaction";
-import * as crypto from "crypto";
+import { createHmac } from "crypto";
 import { configuration } from "../config/config";
 
 class TransactionController {
@@ -23,8 +23,7 @@ class TransactionController {
   }
 
   async webhook(req: Request, res: Response): Promise<void> {
-    const hash = crypto
-      .createHmac("sha512", configuration.paystackSecret)
+    const hash = createHmac("sha512", configuration.paystackSecret)
       .update(JSON.stringify(req.body))
       .digest("hex");
     if (hash == req.headers["x-paystack-signature"]) {
@@ -50,7 +49,7 @@ class TransactionController {
       //   await TransactionService.update(txn.id, { status: "reversed" });
       // }
     }
-    res.send(200);
+    res.sendStatus(200);
   }
 }
 
