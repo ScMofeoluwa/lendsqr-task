@@ -32,7 +32,6 @@ class AuthController {
       const response = {
         accessToken: JwtService.generateAccessToken(user.id, wallet.id),
       };
-      console.log(wallet.id);
       res.status(200).send({ message: "login successful", data: response });
     } catch (err: any) {
       res.status(200).send({ message: err.message, data: null });
