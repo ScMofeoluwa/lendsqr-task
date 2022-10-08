@@ -15,6 +15,3 @@ app.use("/transactions", transactionRouter);
 app.listen(port, () => {
   console.log(`Connected to port:${port}`);
 });
-
-//TODO: Find where I used type ignore
-//TODO: Message Queue for the webhook? 🤔

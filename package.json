@@ -6,7 +6,7 @@
     "verify-format": "prettier --check src/**",
     "format": "prettier --write src/**",
     "db:migrate": "knex migrate:latest",
-    "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' src/main.ts"
+    "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' --files src/main.ts"
   },
   "license": "MIT",
   "dependencies": {
