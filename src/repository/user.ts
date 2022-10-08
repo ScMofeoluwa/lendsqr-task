@@ -17,6 +17,10 @@ class UserRepository {
   async findByEmail(email: string): Promise<User> {
     return this._model.where("email", email).first();
   }
+
+  async findByUsername(username: string): Promise<User> {
+    return this._model.where("username", username).first();
+  }
 }
 
 export default new UserRepository();

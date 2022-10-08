@@ -20,6 +20,14 @@ class UserService implements IService<User> {
     return user;
   }
 
+  async getOneByUsername(username: string): Promise<User> {
+    const user = await UserRepository.findByUsername(username);
+    if (!user) {
+      throw new Error("user not found");
+    }
+    return user;
+  }
+
   async hashPassword(password: string): Promise<string> {
     const salt = await genSalt(10);
     return await hash(password, salt);
