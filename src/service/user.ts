@@ -1,21 +1,27 @@
 import UserRepository from "../repository/user";
-import { IUser, IService } from "../interface";
+import { IUser, Data } from "../interface";
 import { genSalt, hash, compare } from "bcryptjs";
+import { errorHandler } from "./index";
+import WalletService from "./wallet";
+import JwtService from "./jwt";
 
-class UserService implements IService<IUser> {
-  async create(data: Omit<IUser, "id">): Promise<boolean> {
+class UserService {
+  async create(data: Omit<IUser, "id">): Promise<IUser> {
     let user = await UserRepository.findByEmail(data.email);
     if (user) {
-      throw new Error("user already exists.");
+      errorHandler("user already exists", 400);
     }
     data.password = await this.hashPassword(data.password);
-    return await UserRepository.create(data);
+    await UserRepository.create(data);
+    user = await this.getOneByEmail(data.email);
+    await WalletService.create({ user_id: user.id });
+    return user;
   }
 
   async getOneByEmail(email: string): Promise<IUser> {
     const user = await UserRepository.findByEmail(email);
     if (!user) {
-      throw new Error("user not found");
+      errorHandler("user not found", 404);
     }
     return user;
   }
@@ -23,7 +29,7 @@ class UserService implements IService<IUser> {
   async getOneByUsername(username: string): Promise<IUser> {
     const user = await UserRepository.findByUsername(username);
     if (!user) {
-      throw new Error("user not found");
+      errorHandler("user not found", 404);
     }
     return user;
   }
@@ -38,6 +44,21 @@ class UserService implements IService<IUser> {
     savedPassword: string,
   ): Promise<boolean> {
     return await compare(userGivenPassword, savedPassword);
+  }
+
+  async login(data: Pick<IUser, "email" | "password">): Promise<Data> {
+    const user = await this.getOneByEmail(data.email);
+    const validPassword = await this.isValidPassword(
+      data.password,
+      user.password,
+    );
+    if (!validPassword) {
+      errorHandler("Invalid email or password", 400);
+    }
+    const wallet = await WalletService.getOneByUser(user.id);
+    return {
+      accessToken: JwtService.generateAccessToken(user.id, wallet.id),
+    };
   }
 }
 

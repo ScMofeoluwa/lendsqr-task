@@ -24,7 +24,7 @@ class TransactionRepository {
   }
 
   async findByWallet(walletId: number, id: string): Promise<ITransaction> {
-    return this._model.where("wallet_id", walletId).where("id", id);
+    return this._model.where("wallet_id", walletId).where("id", id).first();
   }
 
   async findOne(id: string): Promise<ITransaction> {

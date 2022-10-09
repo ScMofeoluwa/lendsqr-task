@@ -10,7 +10,8 @@ class TransactionController {
       const txn = await TransactionService.getByWallet(walletId, req.params.id);
       res.status(200).send({ message: null, data: txn });
     } catch (err: any) {
-      res.status(400).send({ message: err.message, data: null });
+      const status = err.status ? err.status : 400;
+      res.status(status).send({ message: err.message, data: null });
     }
   }
 

@@ -30,7 +30,7 @@ class PaystackService {
       },
     );
     return {
-      authorization_url: data.data["authorization_url"],
+      checkoutUrl: data.data["authorization_url"],
       txnRef: reference,
     };
   }

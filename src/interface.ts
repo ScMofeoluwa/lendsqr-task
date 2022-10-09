@@ -6,10 +6,6 @@ export type Data = {
   [key: string]: any;
 };
 
-export interface IService<T> {
-  create(data: Omit<T, "id">): Promise<boolean>;
-}
-
 export interface IResponseData {
   status: number;
   message: string;

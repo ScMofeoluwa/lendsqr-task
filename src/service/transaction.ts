@@ -1,7 +1,8 @@
 import TransactionRepository from "../repository/transaction";
-import { ITransaction, IService } from "../interface";
+import { ITransaction } from "../interface";
+import { errorHandler } from "./index";
 
-class TransactionService implements IService<ITransaction> {
+class TransactionService {
   async create(data: Partial<ITransaction>): Promise<any> {
     return await TransactionRepository.create(data);
   }
@@ -9,7 +10,7 @@ class TransactionService implements IService<ITransaction> {
   async getByWallet(walletId: number, id: string): Promise<ITransaction> {
     const txn = await TransactionRepository.findByWallet(walletId, id);
     if (!txn) {
-      throw new Error("transaction not found");
+      errorHandler("transaction not found", 404);
     }
     return txn;
   }
@@ -17,7 +18,7 @@ class TransactionService implements IService<ITransaction> {
   async getOne(id: string): Promise<ITransaction> {
     const txn = await TransactionRepository.findOne(id);
     if (!txn) {
-      throw new Error("transaction not found");
+      errorHandler("transaction not found", 404);
     }
     return txn;
   }

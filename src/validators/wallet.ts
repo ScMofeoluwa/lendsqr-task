@@ -19,6 +19,7 @@ class WalletValidator {
       name: Joi.string().min(5).max(50).required(),
       amount: Joi.number().min(1).required(),
       account: Joi.string().required(),
+      bank: Joi.string().required(),
       reason: Joi.string().optional(),
     });
   }
