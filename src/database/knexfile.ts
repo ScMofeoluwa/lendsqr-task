@@ -3,13 +3,7 @@ import { configuration } from "../config/config";
 
 const config: Knex.Config = {
   client: "mysql",
-  connection: {
-    database: configuration.database,
-    user: configuration.username,
-    password: configuration.password,
-    host: configuration.host,
-    port: configuration.port,
-  },
+  connection: configuration.connection,
   pool: {
     min: 2,
     max: 10,
@@ -19,5 +13,5 @@ const config: Knex.Config = {
   },
 };
 
-// module.exports = config;
-export { config };
+module.exports = config;
+//knex cli doesn't support es6 module system by default
