@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon --watch './**/*.ts' --exec 'ts-node' --files src/server.ts",
     "db:migrate": "knex migrate:latest --knexfile src/database/knexfile.ts",
-    "seed:run": "knex seed:run --knexfile src/database/knexfile.ts",
+    "db:seeds": "knex seed:run --knexfile src/database/knexfile.ts",
     "test": "jest --clearCache && jest --verbose --runInBand --forceExit",
     "test:cov": "jest --coverage --forceExit",
     "verify-format": "prettier --check src/**",
