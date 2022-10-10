@@ -8,11 +8,13 @@ dotenv.config({
 
 const options: Data = {
   development: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DEV_DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    connection: {
+      database: process.env.DEV_DB_NAME,
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+    },
     app_port: process.env.PORT,
     baseUrl: process.env.BASE_URL,
     timeout: process.env.TIMEOUT,
@@ -20,11 +22,13 @@ const options: Data = {
     secret: process.env.REFRESH_SECRET,
   },
   test: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.TEST_DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    connection: {
+      database: process.env.TEST_DB_NAME,
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+    },
     app_port: process.env.PORT,
     baseUrl: process.env.BASE_URL,
     timeout: process.env.TIMEOUT,
@@ -32,15 +36,11 @@ const options: Data = {
     secret: process.env.REFRESH_SECRET,
   },
   production: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.PROD_DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    connection: process.env.CLEARDB_DATABASE_URL,
     app_port: process.env.PORT,
     baseUrl: process.env.BASE_URL,
     timeout: process.env.TIMEOUT,
-    paystackSecret: process.env.PAYSTACK_LIVE_SECRET,
+    paystackSecret: process.env.PAYSTACK_TEST_SECRET,
     secret: process.env.REFRESH_SECRET,
   },
 };
