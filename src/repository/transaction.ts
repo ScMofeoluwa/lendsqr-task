@@ -10,13 +10,7 @@ class TransactionRepository {
   }
 
   async create(item: Partial<ITransaction>): Promise<void> {
-    const trx = await db.transaction();
-    try {
-      await trx(this.tableName).insert(item);
-      await trx.commit();
-    } catch (err: any) {
-      await trx.rollback(err);
-    }
+    return this._model.insert(item);
   }
 
   async findAll(walletId: number): Promise<ITransaction[]> {

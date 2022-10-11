@@ -1,9 +1,9 @@
 import WalletRepository from "../repository/wallet";
-import TransactionRepository from "../repository/transaction";
 import { Data, ITransaction, IWallet, Status } from "../interface";
 import PaystackService from "./paystack";
 import UserService from "./user";
 import { generate } from "shortid";
+import { db } from "../repository";
 import { errorHandler } from "./index";
 
 class WalletService {
@@ -28,20 +28,27 @@ class WalletService {
     return wallet;
   }
 
-  async fund(walletId: number, amount: number): Promise<Data> {
+  async fund(walletId: number, amount: number): Promise<any> {
+    const trx = await db.transaction();
     const payload = await PaystackService.initializeTransaction(amount);
-    const txn: ITransaction = {
-      id: payload.txnRef,
-      amount: amount,
-      wallet_id: walletId,
-      destination: walletId,
-      type: "deposit",
-    };
-    await TransactionRepository.create(txn);
-    return payload;
+    try {
+      const txn: ITransaction = {
+        id: payload.txnRef,
+        amount: amount,
+        wallet_id: walletId,
+        destination: walletId,
+        type: "deposit",
+      };
+      await trx("transactions").insert(txn);
+      await trx.commit();
+      return payload;
+    } catch (err: any) {
+      await trx.rollback(err);
+    }
   }
 
   async withdraw(walletId: number, data: Data): Promise<any> {
+    const trx = await db.transaction();
     const bankCode = await PaystackService.getBankCode(data.bank);
     const amount = data.amount;
     const recipientCode = await PaystackService.createTransferRecipient({
@@ -67,17 +74,24 @@ class WalletService {
     if (walletBalance < amount) {
       errorHandler("insufficient balance", 400);
     }
-    await TransactionRepository.create({
-      id: generate(),
-      wallet_id: walletId,
-      amount: amount * -1,
-      source: walletId,
-      type: "withdrawal",
-      status: status,
-    });
+    try {
+      const txn: ITransaction = {
+        id: generate(),
+        wallet_id: walletId,
+        amount: amount * -1,
+        source: walletId,
+        type: "withdrawal",
+        status: status,
+      };
+      await trx("transactions").insert(txn);
+      await trx.commit();
+    } catch (err: any) {
+      await trx.rollback(err);
+    }
   }
 
   async transfer(walletId: number, data: Data): Promise<any> {
+    const trx = await db.transaction();
     const user = await UserService.getOneByUsername(data.username);
     const walletBalance = await WalletRepository.getBalance(walletId);
     const destinationWallet = await this.getOneByUser(user.id);
@@ -85,24 +99,31 @@ class WalletService {
     if (walletBalance < amount) {
       errorHandler("insufficient balance", 400);
     }
-    await TransactionRepository.create({
-      id: generate(),
-      wallet_id: walletId,
-      amount: amount * -1,
-      source: walletId,
-      destination: destinationWallet.id,
-      type: "transfer",
-      status: "successful",
-    });
-    await TransactionRepository.create({
-      id: generate(),
-      wallet_id: destinationWallet.id,
-      amount: amount,
-      source: walletId,
-      destination: destinationWallet.id,
-      type: "transfer",
-      status: "successful",
-    });
+    try {
+      const txn1: ITransaction = {
+        id: generate(),
+        wallet_id: walletId,
+        amount: amount * -1,
+        source: walletId,
+        destination: destinationWallet.id,
+        type: "transfer",
+        status: "successful",
+      };
+      const txn2: ITransaction = {
+        id: generate(),
+        wallet_id: destinationWallet.id,
+        amount: amount,
+        source: walletId,
+        destination: destinationWallet.id,
+        type: "transfer",
+        status: "successful",
+      };
+      await trx("transactions").insert(txn1);
+      await trx("transactions").insert(txn2);
+      await trx.commit();
+    } catch (err: any) {
+      await trx.rollback(err);
+    }
   }
 }
 
